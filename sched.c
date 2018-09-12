@@ -114,8 +114,8 @@ PUBLIC void yield(void)
 
 	if(isEmpty(!f0)) {
 		processo_queue = dequeue(f0);
-		next = processo_queue.processo;
-		curr_prio = processo_queue.queue_priority;
+		next = processo_queue->processo;
+		curr_prio = processo_queue->queue_priority;
 
 		//ageing
 		aging(f1);
@@ -125,8 +125,8 @@ PUBLIC void yield(void)
 
  } else if(!isEmpty(f1)) {
 	 processo_queue = dequeue(f1);
-	 next = processo_queue.processo;
-	 curr_prio = processo_queue.queue_priority;
+	 next = processo_queue->processo;
+	 curr_prio = processo_queue->queue_priority;
 
 	 aging(f2);
 	 aging(f3);
@@ -134,21 +134,21 @@ PUBLIC void yield(void)
 
  } else if(!isEmpty(f2)) {
 	 processo_queue = dequeue(f2);
-	 next = processo_queue.processo;
-	 curr_prio = processo_queue.queue_priority;
+	 next = processo_queue->processo;
+	 curr_prio = processo_queue->queue_priority;
 
 	 aging(f3);
 	 aging(f4);
  } else if(!isEmpty(f3)) {
 	 processo_queue = dequeue(f3);
-	 next = processo_queue.processo;
-	 curr_prio = processo_queue.queue_priority;
+	 next = processo_queue->processo;
+	 curr_prio = processo_queue->queue_priority;
 
 	 aging(f4);
  } else if(!isEmpty(f4)){
 	 processo_queue = dequeue(f4);
-	 next = processo_queue.processo;
-	 curr_prio = processo_queue.queue_priority;
+	 next = processo_queue->processo;
+	 curr_prio = processo_queue->queue_priority;
 	}
 	// for (p = FIRST_PROC; p <= LAST_PROC; p++)
 	// {
