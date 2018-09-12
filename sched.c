@@ -97,17 +97,17 @@ PUBLIC void yield(void)
 	last_proc = curr_proc;
 
 
-	/* Check alarm. */
-	for (p = FIRST_PROC; p <= LAST_PROC; p++)
-	{
-		/* Skip invalid processes. */
-		if (!IS_VALID(p))
-			continue;
-
-		/* Alarm has expired. */
-		if ((p->alarm) && (p->alarm < ticks))
-			p->alarm = 0, sndsig(p, SIGALRM);
-	}
+	// /* Check alarm. */
+	// for (p = FIRST_PROC; p <= LAST_PROC; p++)
+	// {
+	// 	/* Skip invalid processes. */
+	// 	if (!IS_VALID(p))
+	// 		continue;
+	//
+	// 	/* Alarm has expired. */
+	// 	if ((p->alarm) && (p->alarm < ticks))
+	// 		p->alarm = 0, sndsig(p, SIGALRM);
+	// }
 
 	/* Choose a process to run next. */
 	next = IDLE;
