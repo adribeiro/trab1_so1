@@ -31,7 +31,6 @@
 #include <signal.h>
 #include <limits.h>
 
-#define AGING_CONST -5;
 /**
  * @brief Idle process page directory.
  */
@@ -67,32 +66,16 @@ PUBLIC pid_t next_pid = 0;
  */
 PUBLIC unsigned nprocs = 0;
 
-/**
- * @brief Element of a Queue
- */
- EXTERN struct process_queue{
-    struct process processo;
-    int queue_priority;
-};
-
-/**
- * @brief Queue struct.
- */
- EXTERN struct Queue
- {
-     int front, rear, size;
-     unsigned capacity;
-     struct process_queue array[PROC_MAX];
- };
 
  // function to create a queue of given capacity.
 // It initializes size of queue as 0
 PUBLIC struct Queue* createQueue()
 {
-    struct Queue* queue = (struct Queue*) malloc(sizeof(struct Queue));
+    struct Queue* queue;
     queue->capacity = PROC_MAX;
-    queue->front = queue->size = 0;
-    queue->rear = PROC_MAX - 1;  // This is important, see the enqueue
+    queue->front = 0;
+    queue->size = 0;
+    queue->rear = capacity - 1;
     return queue;
 }
 
@@ -128,26 +111,6 @@ PUBLIC struct process_queue dequeue(struct Queue* queue)
     return item;
 }
 
-//Funcao para incrementar as prioridades
-PUBLIC void aging(struct Queue* queue){
-    process_queue pq;
-    if (isEmpty(queue))
-        return;
-
-    for (int i = 0; i < queue->size; i++) {
-      /* code */
-      array[i].queue_priority += AGING_CONST;
-
-      //limits
-      if(array[i].queue_priority + array[i].process.priority <= -100){
-        array[i].queue_priority = -100 - array[i].process.priority;
-      }
-      else if(array[i].queue_priority + array[i].process.priority <= 200){
-        array[i].queue_priority = 200 - array[i].process.priority;
-      }
-    }
-
-}
 // Function to get front of queue
 PUBLIC struct process_queue front(struct Queue* queue)
 {
@@ -171,9 +134,8 @@ PUBLIC struct Queue f1;
 PUBLIC struct Queue f2;
 PUBLIC struct Queue f3;
 PUBLIC struct Queue f4;
-//PUBLIC struct Queue sleeping_queue;
+PUBLIC int curr_prio;
 
-PUBLIC int curr_prio = 0;
 /**
  * @brief Initializes the process management system.
  */
@@ -188,11 +150,11 @@ PUBLIC void pm_init(void)
   */
   /*Initialize the process queues.*/
 
-  f0 = createQueue(PROC_MAX);
-  f1 = createQueue(PROC_MAX);
-  f2 = createQueue(PROC_MAX);
-  f3 = createQueue(PROC_MAX);
-  f4 = createQueue(PROC_MAX);
+  f0 = createQueue();
+  f1 = createQueue();
+  f2 = createQueue();
+  f3 = createQueue();
+  f4 = createQueue();
 
 	/* Handcraft init process. */
 	IDLE->cr3 = (dword_t)idle_pgdir;

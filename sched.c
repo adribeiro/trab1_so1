@@ -34,9 +34,9 @@ PUBLIC void sched(struct process *proc, int queue_p)
 	proc->state = PROC_READY;
 	proc->counter = 0;
 
-	struct process_queue *p;
-	p->process = proc;
-	p->queue_priority = queue_p;
+	struct process_queue p;
+	p.process = proc;
+	p.queue_priority = queue_p;
 
 	if(proc-> priority + queue_p >= 119) {
    /* f4 */
@@ -77,7 +77,7 @@ PUBLIC void resume(struct process *proc)
 {
 	/* Resume only if process has stopped. */
 	if (proc->state == PROC_STOPPED)
-		sched(proc, int x);
+		sched(proc, 0);
 }
 
 /**
@@ -87,7 +87,7 @@ PUBLIC void yield(void)
 {
 	struct process *p;    /* Working process.     */
 	struct process *next; /* Next process to run. */
-	struct process_queue *processo_queue;
+	struct process_queue processo_queue;
 
 	/* Re-schedule process for execution. */
 	if (curr_proc->state == PROC_RUNNING)
@@ -114,8 +114,9 @@ PUBLIC void yield(void)
 
 	if(isEmpty(!f0)) {
 		processo_queue = dequeue(f0);
-		next = processo_queue->processo;
-		curr_prio = processo_queue->queue_priority;
+		next = processo_queue.processo;
+		curr_prio = processo_queue.queue_priority;
+		next->counter = PROC_QUANTUM - 20;
 
 		//ageing
 		aging(f1);
@@ -125,8 +126,9 @@ PUBLIC void yield(void)
 
  } else if(!isEmpty(f1)) {
 	 processo_queue = dequeue(f1);
-	 next = processo_queue->processo;
-	 curr_prio = processo_queue->queue_priority;
+	 next = processo_queue.processo;
+	 curr_prio = processo_queue.queue_priority;
+	 next->counter = PROC_QUANTUM - 10;
 
 	 aging(f2);
 	 aging(f3);
@@ -134,21 +136,24 @@ PUBLIC void yield(void)
 
  } else if(!isEmpty(f2)) {
 	 processo_queue = dequeue(f2);
-	 next = processo_queue->processo;
-	 curr_prio = processo_queue->queue_priority;
+	 next = processo_queue.processo;
+	 curr_prio = processo_queue.queue_priority;
+	 next->counter = PROC_QUANTUM;
 
 	 aging(f3);
 	 aging(f4);
  } else if(!isEmpty(f3)) {
 	 processo_queue = dequeue(f3);
-	 next = processo_queue->processo;
-	 curr_prio = processo_queue->queue_priority;
+	 next = processo_queue.processo;
+	 curr_prio = processo_queue.queue_priority;
+	 next->counter = PROC_QUANTUM + 10;
 
 	 aging(f4);
  } else if(!isEmpty(f4)){
 	 processo_queue = dequeue(f4);
-	 next = processo_queue->processo;
-	 curr_prio = processo_queue->queue_priority;
+	 next = processo_queue.processo;
+	 curr_prio = processo_queue.queue_priority;
+	 next->counter = PROC_QUANTUM + 20;
 	}
 	// for (p = FIRST_PROC; p <= LAST_PROC; p++)
 	// {
@@ -175,8 +180,32 @@ PUBLIC void yield(void)
 	// }
 
 	/* Switch to next process. */
-	next->priority = PRIO_USER;
+	//next->priority = PRIO_USER;
 	next->state = PROC_RUNNING;
-	next->counter = PROC_QUANTUM;
+	//next->counter = PROC_QUANTUM;
 	switch_to(next);
+}
+
+//Funcao para incrementar as prioridades
+PUBLIC void aging(struct Queue* queue){
+    process_queue pq;
+    int s = queue->size;
+		int new_prio = 0;
+
+    for (int i = 0; i < queue->size; i++) {
+      /* code */
+      pq = queue->dequeue();
+			new_prio = pq.queue_priority+AGING_CONST;
+
+			//limits
+      if(new_prio + pq.process->priority <= -100){
+        new_prio = -100 - pq.process->priority;
+      }
+      else if(new_prio + pq.process->priority <= 200){
+        new_prio = 200 - pq.process->priority;
+      }
+
+			sched(pq.processo, new_prio);
+    }
+
 }
