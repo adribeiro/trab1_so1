@@ -53,14 +53,12 @@ PUBLIC pid_t sys_fork(void)
 	proc->flags = 0;
 	proc->state = PROC_DEAD;
 
-	//for (proc = FIRST_PROC; proc <= LAST_PROC; proc++)
-	//{
+	for (proc = FIRST_PROC; proc <= LAST_PROC; proc++)
+	{
 		/* Found. */
-		//if (!IS_VALID(proc))
-			//goto found;
-	//}
-	if (!IS_VALID(proc) && nprocs <= PROC_MAX)
-		goto found;
+		if (!IS_VALID(proc))
+			goto found;
+	}
 
 	kprintf("process table overflow");
 
@@ -159,7 +157,8 @@ found:
 	proc->alarm = 0;
 	proc->next = NULL;
 	proc->chain = NULL;
-	sched(proc,0);
+	proc->queue_prio = 0;
+	sched(proc);
 
 	curr_proc->nchildren++;
 
