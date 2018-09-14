@@ -204,6 +204,8 @@
     	unsigned alarm;          /**< Alarm.                  */
 		struct process *next;    /**< Next process in a list. */
 		struct process **chain;  /**< Sleeping chain.         */
+		int queue_prio;
+		int last_queue;
 		/**@}*/
 	};
 
@@ -283,31 +285,23 @@
 	/* Trab 1 */
 	#define AGING_CONST -5;
 
-	struct process_queue{
-		 struct process *processo;
-		 int queue_priority;
- 	};
 	struct Queue
   {
-      int front,rear, size;
-      unsigned capacity;
-      struct process_queue array[capacity];
+		struct process *primeiro_proc;
+		struct process *ultimo_proc;
   };
 
-	EXTERN struct Queue* createQueue();
-	EXTERN int isFull(struct Queue* queue);
+
+	EXTERN struct Queue createQueue();
 	EXTERN int isEmpty(struct Queue* queue);
-	EXTERN void enqueue(struct Queue* queue,struct  process_queue item);
-	EXTERN struct process_queue dequeue(struct Queue* queue);
-	EXTERN struct process_queue front(struct Queue* queue);
-	EXTERN struct process_queue rear(struct Queue* queue);
+	EXTERN void enqueue(struct Queue* queue,struct  process* item);
+	EXTERN struct process* dequeue(struct Queue* queue);
 
 	EXTERN struct Queue f0;
 	EXTERN struct Queue f1;
 	EXTERN struct Queue f2;
 	EXTERN struct Queue f3;
 	EXTERN struct Queue f4;
-	EXTERN int curr_prio;
 
 
 #endif /* _ASM_FILE */

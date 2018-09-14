@@ -71,61 +71,39 @@ PUBLIC unsigned nprocs = 0;
 // It initializes size of queue as 0
 PUBLIC struct Queue* createQueue()
 {
-    struct Queue* queue;
-    queue->capacity = PROC_MAX;
-    queue->front = 0;
-    queue->size = 0;
-    queue->rear = capacity - 1;
+    struct Queue queue;
+    queue->primeiro_proc = NULL;
+    queue->ultimo_proc = NULL;
     return queue;
 }
 
-// Queue is full when size becomes equal to the capacity
-PUBLIC int isFull(struct Queue* queue)
-{  return (queue->size == queue->capacity);  }
-
 // Queue is empty when size is 0
 PUBLIC int isEmpty(struct Queue* queue)
-{  return (queue->size == 0); }
+{  return (queue->primeiro_proc == NULL); }
 
 // Function to add an item to the queue.
-// It changes rear and size
-PUBLIC void enqueue(struct Queue* queue,struct  process_queue item)
+PUBLIC void enqueue(struct Queue* queue,struct  process* item)
 {
-    if (isFull(queue))
+    if (isEmpty(queue)){
+        queue->primeiro_proc = item;
+        queue->ultimo_proc = item;
         return;
-    queue->rear = (queue->rear + 1)%queue->capacity;
-    queue->array[queue->rear] = item;
-    queue->size = queue->size + 1;
-    //printf("%d enqueued to queue\n", item);
+      }
+    struct process *lproc = queue->ultimo_proc;
+    lproc->next = item;
+    queue->ultimo_proc = item;
 }
 
 // Function to remove an item from queue.
-// It changes front and size
-PUBLIC struct process_queue dequeue(struct Queue* queue)
+PUBLIC struct process* dequeue(struct Queue* queue)
 {
     if (isEmpty(queue))
         return;
-    struct process_queue item = queue->array[queue->front];
-    queue->front = (queue->front + 1)%queue->capacity;
-    queue->size = queue->size - 1;
+    struct process *item = queue->primeiro_proc;
+    queue->primeiro_proc = item->next;
     return item;
 }
 
-// Function to get front of queue
-PUBLIC struct process_queue front(struct Queue* queue)
-{
-    if (isEmpty(queue))
-        return;
-    return queue->array[queue->front];
-}
-
-// Function to get rear of queue
-PUBLIC struct process_queue rear(struct Queue* queue)
-{
-    if (isEmpty(queue))
-        return;
-    return queue->array[queue->rear];
-}
 
 //Process queue
 
@@ -134,7 +112,6 @@ PUBLIC struct Queue f1;
 PUBLIC struct Queue f2;
 PUBLIC struct Queue f3;
 PUBLIC struct Queue f4;
-PUBLIC int curr_prio;
 
 /**
  * @brief Initializes the process management system.
