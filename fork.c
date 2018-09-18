@@ -49,10 +49,6 @@ PUBLIC pid_t sys_fork(void)
 
 #endif
 
-	/* Search for a free process. */
-	proc->flags = 0;
-	proc->state = PROC_DEAD;
-
 	for (proc = FIRST_PROC; proc <= LAST_PROC; proc++)
 	{
 		/* Found. */
@@ -158,6 +154,7 @@ found:
 	proc->next = NULL;
 	proc->chain = NULL;
 	proc->queue_prio = 0;
+	proc->last_queue = 0;
 	sched(proc);
 
 	curr_proc->nchildren++;

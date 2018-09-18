@@ -69,11 +69,11 @@ PUBLIC unsigned nprocs = 0;
 
  // function to create a queue of given capacity.
 // It initializes size of queue as 0
-PUBLIC struct Queue* createQueue()
+PUBLIC struct Queue createQueue()
 {
     struct Queue queue;
-    queue->primeiro_proc = NULL;
-    queue->ultimo_proc = NULL;
+    queue.primeiro_proc = NULL;
+    queue.ultimo_proc = NULL;
     return queue;
 }
 
@@ -98,7 +98,7 @@ PUBLIC void enqueue(struct Queue* queue,struct  process* item)
 PUBLIC struct process* dequeue(struct Queue* queue)
 {
     if (isEmpty(queue))
-        return;
+        return NULL;
     struct process *item = queue->primeiro_proc;
     queue->primeiro_proc = item->next;
     return item;
@@ -121,10 +121,10 @@ PUBLIC void pm_init(void)
 	int i;             /* Loop index.      */
 	struct process *p; /* Working process. */
 
-	/* Initialize the process table.
+	/* Initialize the process table. */
 	for (p = FIRST_PROC; p <= LAST_PROC; p++)
 		p->flags = 0, p->state = PROC_DEAD;
-  */
+
   /*Initialize the process queues.*/
 
   f0 = createQueue();
@@ -175,6 +175,8 @@ PUBLIC void pm_init(void)
 	IDLE->alarm = 0;
 	IDLE->next = NULL;
 	IDLE->chain = NULL;
+    // IDLE->queue_prio = 0;
+    // IDLE->last_queue = 2;
 
 	nprocs++;
 

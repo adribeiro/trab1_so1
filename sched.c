@@ -23,6 +23,7 @@
 #include <nanvix/hal.h>
 #include <nanvix/pm.h>
 #include <signal.h>
+#include <stdio.h>
 
 /**
  * @brief Schedules a process to execution.
@@ -39,24 +40,28 @@ PUBLIC void sched(struct process *proc)
 	if(proc-> priority + proc->nice + proc->queue_prio >= 119) {
    /* f4 */
 	 proc->last_queue = 4;
-	 enqueue(f4, p);
+	 enqueue(&f4, proc);
  } else if( proc-> priority + proc->nice + proc->queue_prio >= 80) {
    /* f3 */
 	 proc->last_queue = 3;
-	 enqueue(f3, p);
+	 enqueue(&f3, proc);
  } else if( proc-> priority + proc->nice + proc->queue_prio >= PRIO_USER) {
    /* f2 */
 	 proc->last_queue = 2;
-	 enqueue(f2, p);
+	 enqueue(&f2, proc);
  } else if( proc-> priority + proc->nice + proc->queue_prio >= PRIO_REGION) {
 	 /* f1 */
 	 proc->last_queue = 1;
-	 enqueue(f1, p);
+	 enqueue(&f1, proc);
 	} else {
    /*f0*/
 	 proc->last_queue = 0;
-	 enqueue(f0, p);
+	 enqueue(&f0, proc);
 	}
+
+	// printf("PID %d\n", proc->pid);
+	// printf("LAST_QUEUE %d\n", proc->last_queue);
+	// printf("QUEUE PRIORITY %d", proc->queue_prio);
 }
 
 /**
@@ -80,20 +85,21 @@ PUBLIC void resume(struct process *proc)
 {
 	/* Resume only if process has stopped. */
 	if (proc->state == PROC_STOPPED){
-		switch(curr_proc->last_queue) {
+		switch(proc->last_queue) {
 			case 4 :
-         curr_proc->queue_prio = 100 - curr_proc->priority - curr_proc->nice;
+         proc->queue_prio = 100 - proc->priority - proc->nice;
          break;
 			case 3 :
-         curr_proc->queue_prio = 60 - curr_proc->priority - curr_proc->nice;
+         proc->queue_prio = 60 - proc->priority - proc->nice;
          break;
       case 2 :
-				curr_proc->queue_prio = 10 - curr_proc->priority - curr_proc->nice;
+				proc->queue_prio = 10 - proc->priority - proc->nice;
 				break;
       case 1 :
-				curr_proc->queue_prio = -60 - curr_proc->priority - curr_proc->nice;
+				proc->queue_prio = -60 - proc->priority - proc->nice;
          break;
       default :
+	  	break;
    }
 		sched(proc);
 	}
@@ -101,15 +107,14 @@ PUBLIC void resume(struct process *proc)
 
 
 //Funcoe de aging das filas
-PUBLIC void aging_f1(struct Queue* queue){
-		if (/* condition */isEmpty(queue)) {
+PUBLIC void aging_f1(){
+		if (/* condition */isEmpty(&f1)) {
 			/* code */
 			return;
 		}
 
 		struct process* p;
 		struct process* l = f1.primeiro_proc;
-		struct process* aux;
 		p = f1.primeiro_proc;
 		while (p != NULL) {
 			/* code */
@@ -124,14 +129,13 @@ PUBLIC void aging_f1(struct Queue* queue){
 
 }
 PUBLIC void aging_f2(){
-		if (/* condition */isEmpty(queue)) {
+		if (/* condition */isEmpty(&f2)) {
 			/* code */
 			return;
 		}
 
 		struct process* p;
 		struct process* l = f2.primeiro_proc;
-		struct process* aux;
 		p = f2.primeiro_proc;
 		while (p != NULL) {
 			/* code */
@@ -146,14 +150,13 @@ PUBLIC void aging_f2(){
 
 }
 PUBLIC void aging_f3(){
-		if (/* condition */isEmpty(queue)) {
+		if (/* condition */isEmpty(&f3)) {
 			/* code */
 			return;
 		}
 
 		struct process* p;
 		struct process* l = f3.primeiro_proc;
-		struct process* aux;
 		p = f3.primeiro_proc;
 		while (p != NULL) {
 			/* code */
@@ -169,14 +172,13 @@ PUBLIC void aging_f3(){
 }
 
 PUBLIC void aging_f4(){
-		if (/* condition */isEmpty(queue)) {
+		if (/* condition */isEmpty(&f4)) {
 			/* code */
 			return;
 		}
 
 		struct process* p;
 		struct process* l = f4.primeiro_proc;
-		struct process* aux;
 		p = f4.primeiro_proc;
 		while (p != NULL) {
 			/* code */
@@ -215,6 +217,7 @@ PUBLIC void yield(void)
 				curr_proc->queue_prio = 10 - curr_proc->priority - curr_proc->nice;
 				break;
 			default:
+				break;
    }
 		sched(curr_proc);
 	}
@@ -237,40 +240,40 @@ PUBLIC void yield(void)
 	/* Choose a process to run next. */
 	next = IDLE;
 
-	if(!isEmpty(f0)) {
-		next = dequeue(f0);
-		next->counter = PROC_QUANTUM - 20;
+		if(!isEmpty(&f0)) {
+			next = dequeue(&f0);
+			next->counter = PROC_QUANTUM - 20;
 
-		//ageing
-		aging_f1;
-		aging_f2;
-		aging_f3;
-		aging_f4;
+			//ageing
+			aging_f1();
+			aging_f2();
+			aging_f3();
+			aging_f4();
 
- } else if(!isEmpty(f1)) {
-	 next = dequeue(f1);
-	 next->counter = PROC_QUANTUM - 10;
+	 	} else if(!isEmpty(&f1)) {
+		 next = dequeue(&f1);
+		 next->counter = PROC_QUANTUM - 10;
 
-	 aging_f2;
-	 aging_f3;
-	 aging_f4;
+		 aging_f2();
+		 aging_f3();
+		 aging_f4();
 
- } else if(!isEmpty(f2)) {
-	 next = dequeue(f2);
-	 next->counter = PROC_QUANTUM;
+	 } else if(!isEmpty(&f2)) {
+		 next = dequeue(&f2);
+		 next->counter = PROC_QUANTUM;
 
-	 aging_f3;
-	 aging_f4;
+		 aging_f3();
+		 aging_f4();
 
- } else if(!isEmpty(f3)) {
-	 next = dequeue(f3);
-	 next->counter = PROC_QUANTUM + 10;
+	 } else if(!isEmpty(&f3)) {
+		 next = dequeue(&f3);
+		 next->counter = PROC_QUANTUM + 10;
 
-	 aging_f4;
- } else if(!isEmpty(f4)){
-	 next = dequeue(f4);
-	 next->counter = PROC_QUANTUM + 20;
-	}
+		 aging_f4();
+	 } else if(!isEmpty(&f4)) {
+		 next = dequeue(&f4);
+		 next->counter = PROC_QUANTUM + 20;
+	 }
 	// for (p = FIRST_PROC; p <= LAST_PROC; p++)
 	// {
 	// 	/* Skip non-ready process. */
