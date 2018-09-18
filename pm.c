@@ -66,56 +66,56 @@ PUBLIC pid_t next_pid = 0;
  */
 PUBLIC unsigned nprocs = 0;
 
+ // It initializes size of queue as 0
+ PUBLIC struct Queue createQueue()
+ {
+     struct Queue queue;
+     queue.primeiro_proc = NULL;
+     queue.ultimo_proc = NULL;
+     return queue;
+ }
 
- // function to create a queue of given capacity.
-// It initializes size of queue as 0
-PUBLIC struct Queue createQueue()
-{
-    struct Queue queue;
-    queue.primeiro_proc = NULL;
-    queue.ultimo_proc = NULL;
-    return queue;
-}
+ // Queue is empty when first process is NULL
+ PUBLIC int isEmpty(struct Queue* queue)
+ {  return (queue->primeiro_proc == NULL); }
 
-// Queue is empty when size is 0
-PUBLIC int isEmpty(struct Queue* queue)
-{  return (queue->primeiro_proc == NULL); }
+ // Function to add an item to the queue.
+ PUBLIC void enqueue(struct Queue* queue,struct  process* item)
+ {
+     if (isEmpty(queue)){
+         queue->primeiro_proc = item;
+         queue->ultimo_proc = item;
+         return;
+    	}
 
-// Function to add an item to the queue.
-PUBLIC void enqueue(struct Queue* queue,struct  process* item)
-{
-    if (isEmpty(queue)){
-        queue->primeiro_proc = item;
-        queue->ultimo_proc = item;
-        return;
-      }
-    struct process *lproc = queue->ultimo_proc;
-    lproc->next = item;
-    queue->ultimo_proc = item;
-}
+		 struct process *lproc = queue->ultimo_proc;
+     lproc->next = item;
+     queue->ultimo_proc = item;
+ }
 
-// Function to remove an item from queue.
-PUBLIC struct process* dequeue(struct Queue* queue)
-{
-    if (isEmpty(queue))
-        return NULL;
-    struct process *item = queue->primeiro_proc;
-    queue->primeiro_proc = item->next;
-    return item;
-}
+ // Function to remove an item from queue.
+ PUBLIC struct process* dequeue(struct Queue* queue)
+ {
+     if (isEmpty(queue))
+         return NULL;
+				 
+     struct process *item = queue->primeiro_proc;
+     queue->primeiro_proc = item->next;
+     return item;
+ }
 
 
-//Process queue
+ //Process queues
+ PUBLIC struct Queue f0;
+ PUBLIC struct Queue f1;
+ PUBLIC struct Queue f2;
+ PUBLIC struct Queue f3;
+ PUBLIC struct Queue f4;
 
-PUBLIC struct Queue f0;
-PUBLIC struct Queue f1;
-PUBLIC struct Queue f2;
-PUBLIC struct Queue f3;
-PUBLIC struct Queue f4;
+ /**
+  * @brief Initializes the process management system.
+  */
 
-/**
- * @brief Initializes the process management system.
- */
 PUBLIC void pm_init(void)
 {
 	int i;             /* Loop index.      */
@@ -125,13 +125,12 @@ PUBLIC void pm_init(void)
 	for (p = FIRST_PROC; p <= LAST_PROC; p++)
 		p->flags = 0, p->state = PROC_DEAD;
 
-  /*Initialize the process queues.*/
-
+	/*Initialize the process queues.*/
   f0 = createQueue();
   f1 = createQueue();
   f2 = createQueue();
   f3 = createQueue();
-  f4 = createQueue();
+	f4 = createQueue();
 
 	/* Handcraft init process. */
 	IDLE->cr3 = (dword_t)idle_pgdir;
@@ -175,8 +174,8 @@ PUBLIC void pm_init(void)
 	IDLE->alarm = 0;
 	IDLE->next = NULL;
 	IDLE->chain = NULL;
-    // IDLE->queue_prio = 0;
-    // IDLE->last_queue = 2;
+	IDLE->queue_prio = 0;
+	IDLE->last_queue = 2;
 
 	nprocs++;
 

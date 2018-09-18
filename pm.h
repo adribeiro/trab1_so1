@@ -177,9 +177,9 @@
 		gid_t gid;              /**< Group ID.                */
 		gid_t egid;             /**< Effective group user ID. */
 		gid_t sgid;             /**< Saved set-group-ID.      */
-    pid_t pid;              /**< Process ID.              */
-    struct process *pgrp;   /**< Process group ID.        */
-    struct process *father; /**< Father process.          */
+    	pid_t pid;              /**< Process ID.              */
+    	struct process *pgrp;   /**< Process group ID.        */
+    	struct process *father; /**< Father process.          */
 		char name[NAME_MAX];    /**< Process name.            */
 		/**@}*/
 
@@ -202,10 +202,10 @@
     	int priority;            /**< Process priorities.     */
     	int nice;                /**< Nice for scheduling.    */
     	unsigned alarm;          /**< Alarm.                  */
+			int queue_prio;
+			int last_queue;
 		struct process *next;    /**< Next process in a list. */
 		struct process **chain;  /**< Sleeping chain.         */
-		int queue_prio;
-		int last_queue;
 		/**@}*/
 	};
 
@@ -282,11 +282,10 @@
 	EXTERN pid_t next_pid;
 	EXTERN unsigned nprocs;
 
-	/* Trab 1 */
+		/* Trab 1 */
 	#define AGING_CONST -5;
 
-	struct Queue
-  {
+	struct Queue{
 		struct process *primeiro_proc;
 		struct process *ultimo_proc;
   };
