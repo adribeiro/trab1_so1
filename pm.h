@@ -202,11 +202,11 @@
     	int priority;            /**< Process priorities.     */
     	int nice;                /**< Nice for scheduling.    */
     	unsigned alarm;          /**< Alarm.                  */
-			int queue_prio;
-			int last_queue;
 		struct process *next;    /**< Next process in a list. */
 		struct process **chain;  /**< Sleeping chain.         */
 		/**@}*/
+		int queue_prio;
+		int last_queue;
 	};
 
 	/* Forward definitions. */
@@ -282,7 +282,7 @@
 	EXTERN pid_t next_pid;
 	EXTERN unsigned nprocs;
 
-		/* Trab 1 */
+	/* Trab 1 */
 	#define AGING_CONST -5;
 
 	struct Queue{
@@ -291,7 +291,7 @@
   };
 
 
-	EXTERN struct Queue createQueue();
+	EXTERN void createQueue(struct Queue* queue);
 	EXTERN int isEmpty(struct Queue* queue);
 	EXTERN void enqueue(struct Queue* queue,struct  process* item);
 	EXTERN struct process* dequeue(struct Queue* queue);
@@ -301,7 +301,6 @@
 	EXTERN struct Queue f2;
 	EXTERN struct Queue f3;
 	EXTERN struct Queue f4;
-
 
 #endif /* _ASM_FILE */
 

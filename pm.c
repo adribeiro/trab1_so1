@@ -66,13 +66,14 @@ PUBLIC pid_t next_pid = 0;
  */
 PUBLIC unsigned nprocs = 0;
 
+/**
+ * @brief Initializes the process management system.
+ */
  // It initializes size of queue as 0
- PUBLIC struct Queue createQueue()
+ PUBLIC void createQueue(struct Queue* queue)
  {
-     struct Queue queue;
-     queue.primeiro_proc = NULL;
-     queue.ultimo_proc = NULL;
-     return queue;
+     queue->primeiro_proc = NULL;
+     queue->ultimo_proc = NULL;
  }
 
  // Queue is empty when first process is NULL
@@ -98,7 +99,7 @@ PUBLIC unsigned nprocs = 0;
  {
      if (isEmpty(queue))
          return NULL;
-				 
+
      struct process *item = queue->primeiro_proc;
      queue->primeiro_proc = item->next;
      return item;
@@ -112,12 +113,7 @@ PUBLIC unsigned nprocs = 0;
  PUBLIC struct Queue f3;
  PUBLIC struct Queue f4;
 
- /**
-  * @brief Initializes the process management system.
-  */
-
-PUBLIC void pm_init(void)
-{
+ PUBLIC void pm_init(void){
 	int i;             /* Loop index.      */
 	struct process *p; /* Working process. */
 
@@ -126,11 +122,11 @@ PUBLIC void pm_init(void)
 		p->flags = 0, p->state = PROC_DEAD;
 
 	/*Initialize the process queues.*/
-  f0 = createQueue();
-  f1 = createQueue();
-  f2 = createQueue();
-  f3 = createQueue();
-	f4 = createQueue();
+	createQueue(&f0);
+	createQueue(&f1);
+	createQueue(&f2);
+	createQueue(&f3);
+	createQueue(&f4);
 
 	/* Handcraft init process. */
 	IDLE->cr3 = (dword_t)idle_pgdir;
@@ -174,8 +170,8 @@ PUBLIC void pm_init(void)
 	IDLE->alarm = 0;
 	IDLE->next = NULL;
 	IDLE->chain = NULL;
-	IDLE->queue_prio = 0;
 	IDLE->last_queue = 2;
+	IDLE->queue_prio = 0;
 
 	nprocs++;
 
