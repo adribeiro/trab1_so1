@@ -154,8 +154,7 @@ found:
 	proc->alarm = 0;
 	proc->next = NULL;
 	proc->chain = NULL;
-	proc->queue_prio = 0;
-	proc->last_queue = 2;
+	proc->fila = 2;
 	sched(proc);
 
 	curr_proc->nchildren++;

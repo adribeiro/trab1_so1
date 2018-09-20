@@ -99,22 +99,7 @@ PUBLIC void wakeup(struct process **chain)
 	/* Wakeup sleeping processes. */
 	while (*chain != NULL)
 	{
-		switch((*chain)->last_queue) {
-			case 4 :
-				(*chain)->queue_prio = 100 - (*chain)->priority - (*chain)->nice;
-         break;
-			case 3 :
-         (*chain)->queue_prio = 60 - (*chain)->priority - (*chain)->nice;
-         break;
-      case 2 :
-				(*chain)->queue_prio = 10 - (*chain)->priority - (*chain)->nice;
-				break;
-      case 1 :
-				(*chain)->queue_prio = -60 - (*chain)->priority - (*chain)->nice;
-         break;
-      default :
-				break;
-		}
+		*chain->fila -= 1;
 		sched(*chain);
 		*chain = (*chain)->next;
 	}

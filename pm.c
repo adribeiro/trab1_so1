@@ -69,64 +69,14 @@ PUBLIC unsigned nprocs = 0;
 /**
  * @brief Initializes the process management system.
  */
- // It initializes size of queue as 0
- PUBLIC void createQueue(struct Queue* queue)
- {
-     queue->primeiro_proc = NULL;
-     queue->ultimo_proc = NULL;
- }
-
- // Queue is empty when first process is NULL
- PUBLIC int isEmpty(struct Queue* queue)
- {  return (queue->primeiro_proc == NULL); }
-
- // Function to add an item to the queue.
- PUBLIC void enqueue(struct Queue* queue,struct  process* item)
- {
-     if (isEmpty(queue)){
-         queue->primeiro_proc = item;
-         queue->ultimo_proc = item;
-         return;
-    	}
-
-		 struct process *lproc = queue->ultimo_proc;
-     lproc->next = item;
-     queue->ultimo_proc = item;
- }
-
- // Function to remove an item from queue.
- PUBLIC struct process* dequeue(struct Queue* queue)
- {
-     if (isEmpty(queue))
-         return NULL;
-
-     struct process *item = queue->primeiro_proc;
-     queue->primeiro_proc = item->next;
-     return item;
- }
-
-
- //Process queues
- PUBLIC struct Queue f0;
- PUBLIC struct Queue f1;
- PUBLIC struct Queue f2;
- PUBLIC struct Queue f3;
- PUBLIC struct Queue f4;
-
- PUBLIC void pm_init(void){
+PUBLIC void pm_init(void)
+{
 	int i;             /* Loop index.      */
 	struct process *p; /* Working process. */
 
 	/* Initialize the process table. */
 	for (p = FIRST_PROC; p <= LAST_PROC; p++)
 		p->flags = 0, p->state = PROC_DEAD;
-
-	/*Initialize the process queues.*/
-	createQueue(&f0);
-	createQueue(&f1);
-	createQueue(&f2);
-	createQueue(&f3);
-	createQueue(&f4);
 
 	/* Handcraft init process. */
 	IDLE->cr3 = (dword_t)idle_pgdir;
@@ -170,8 +120,7 @@ PUBLIC unsigned nprocs = 0;
 	IDLE->alarm = 0;
 	IDLE->next = NULL;
 	IDLE->chain = NULL;
-	IDLE->last_queue = 2;
-	IDLE->queue_prio = 0;
+	IDLE->fila = 2;
 
 	nprocs++;
 
